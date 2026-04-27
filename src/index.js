@@ -1,10 +1,11 @@
+const tokenize = (text) => text.toLowerCase().match(/\w+/g) ?? [];
+
 const search = (docs, query) => {
-  const term = query.toLowerCase();
+  const [term] = tokenize(query);
+  if (!term) return [];
+
   return docs
-    .filter((doc) => {
-      const words = doc.text.toLowerCase().split(/\W+/);
-      return words.includes(term);
-    })
+    .filter((doc) => tokenize(doc.text).includes(term))
     .map((doc) => doc.id);
 };
 

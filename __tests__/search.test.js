@@ -26,4 +26,12 @@ describe('search', () => {
   test('is case-insensitive', () => {
     expect(search(docs, 'Shoot')).toEqual(['doc1', 'doc2']);
   });
+
+  test('matches words next to punctuation', () => {
+    expect(search(docs, 'pint')).toEqual(['doc1']);
+  });
+
+  test('strips punctuation from the query', () => {
+    expect(search(docs, 'pint!')).toEqual(['doc1']);
+  });
 });
