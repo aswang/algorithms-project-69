@@ -7,8 +7,8 @@ describe('search', () => {
   const doc3 = { id: 'doc3', text: "I'm your shooter." };
   const docs = [doc1, doc2, doc3];
 
-  test('finds documents containing the word', () => {
-    expect(search(docs, 'shoot')).toEqual(['doc1', 'doc2']);
+  test('ranks documents by term frequency', () => {
+    expect(search(docs, 'shoot')).toEqual(['doc2', 'doc1']);
   });
 
   test('returns an empty array when there are no documents', () => {
@@ -24,7 +24,7 @@ describe('search', () => {
   });
 
   test('is case-insensitive', () => {
-    expect(search(docs, 'Shoot')).toEqual(['doc1', 'doc2']);
+    expect(search(docs, 'Shoot')).toEqual(['doc2', 'doc1']);
   });
 
   test('matches words next to punctuation', () => {
@@ -33,5 +33,12 @@ describe('search', () => {
 
   test('strips punctuation from the query', () => {
     expect(search(docs, 'pint!')).toEqual(['doc1']);
+  });
+
+  test('keeps documents with equal score in their original order', () => {
+    const a = { id: 'a', text: 'cat dog' };
+    const b = { id: 'b', text: 'dog cat' };
+    const c = { id: 'c', text: 'cat cat dog' };
+    expect(search([a, b, c], 'cat')).toEqual(['c', 'a', 'b']);
   });
 });
