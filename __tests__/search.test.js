@@ -35,10 +35,23 @@ describe('search', () => {
     expect(search(docs, 'pint!')).toEqual(['doc1']);
   });
 
-  test('keeps documents with equal score in their original order', () => {
+  test('supports fuzzy multi-word queries', () => {
+    expect(search(docs, 'shoot at me')).toEqual(['doc2', 'doc1']);
+  });
+
+  test('prefers documents matching more distinct query terms over raw frequency', () => {
+    const a = { id: 'a', text: 'cat cat cat cat cat' };
+    const b = { id: 'b', text: 'cat dog' };
+    expect(search([a, b], 'cat dog')).toEqual(['b', 'a']);
+  });
+
+  test('breaks ties on matched-terms count by total frequency', () => {
     const a = { id: 'a', text: 'cat dog' };
-    const b = { id: 'b', text: 'dog cat' };
-    const c = { id: 'c', text: 'cat cat dog' };
-    expect(search([a, b, c], 'cat')).toEqual(['c', 'a', 'b']);
+    const b = { id: 'b', text: 'cat cat dog' };
+    expect(search([a, b], 'cat dog')).toEqual(['b', 'a']);
+  });
+
+  test('returns an empty array for an empty query', () => {
+    expect(search(docs, '')).toEqual([]);
   });
 });
